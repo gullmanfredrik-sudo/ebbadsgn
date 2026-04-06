@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ebbadsgn</title>
+  <link rel="stylesheet" href="https://cdn.snipcart.com/themes/v3.7.2/default/snipcart.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400&family=DM+Mono:wght@300&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --black: #0d0b0a;
+      --white: #f5f0ea;
+      --grey: #3a3535;
+      --blush: #d4899a;
+    }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      height: 100%;
+      background: var(--black);
+      color: var(--white);
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300;
+      overflow-x: hidden;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 100;
+      opacity: 0.35;
+    }
+    .site { min-height: 100vh; display: grid; grid-template-rows: auto 1fr auto; }
+
+    /* Header */
+    header {
+      padding: 2.5rem 3rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      opacity: 0;
+      animation: fadeUp 1.2s ease forwards 0.1s;
+    }
+    .wordmark {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.75rem;
+      letter-spacing: 0.2em;
+      text-transform: lowercase;
+      color: var(--white);
+      text-decoration: none;
+    }
+    .cart-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      color: var(--blush);
+      text-transform: lowercase;
+      padding: 0;
+      transition: opacity 0.3s;
+    }
+    .cart-btn:hover { opacity: 0.6; }
+
+    /* Main */
+    main {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: start;
+      padding: 4rem 3rem 6rem;
+      gap: 0;
+    }
+
+    /* Left: product image */
+    .product-visual {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2rem;
+      opacity: 0;
+      animation: fadeUp 1.4s ease forwards 0.3s;
+    }
+
+    /* Placement toggle */
+    .placement-toggle {
+      display: flex;
+      gap: 0;
+      border: 1px solid var(--grey);
+    }
+    .placement-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      color: var(--grey);
+      text-transform: lowercase;
+      padding: 0.7rem 1.4rem;
+      transition: all 0.25s;
+      position: relative;
+    }
+    .placement-btn + .placement-btn {
+      border-left: 1px solid var(--grey);
+    }
+    .placement-btn.active {
+      color: var(--white);
+      background: #1a1614;
+    }
+
+    .hoodie-wrap {
+      position: relative;
+      width: 100%;
+      max-width: 420px;
+    }
+    .hoodie-img {
+      width: 100%;
+      height: auto;
+      display: block;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+    .hoodie-img.visible {
+      opacity: 1;
+      position: relative;
+    }
+
+    /* Logo lockup below image */
+    .logo-lockup {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+    }
+    .logo-lockup img.flower {
+      width: 80px;
+      height: auto;
+      mix-blend-mode: lighten;
+      filter: drop-shadow(0 4px 20px rgba(212,137,154,0.15));
+    }
+    .logo-wordmark {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.4em;
+      color: var(--white);
+      opacity: 0.5;
+    }
+
+    /* Right: product info */
+    .product-area {
+      padding-left: 5rem;
+      padding-top: 1rem;
+      opacity: 0;
+      animation: fadeUp 1.4s ease forwards 0.5s;
+    }
+    .product-tag {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.3em;
+      color: var(--grey);
+      text-transform: lowercase;
+      margin-bottom: 2rem;
+    }
+    .product-name {
+      font-size: 3.5rem;
+      font-weight: 300;
+      line-height: 1.05;
+      letter-spacing: -0.01em;
+      margin-bottom: 0.5rem;
+    }
+    .product-sub {
+      font-size: 1.1rem;
+      font-weight: 300;
+      color: var(--blush);
+      font-style: italic;
+      margin-bottom: 3rem;
+      opacity: 0.8;
+    }
+    .product-desc {
+      font-size: 0.95rem;
+      line-height: 1.9;
+      color: #776f6f;
+      max-width: 320px;
+      margin-bottom: 3rem;
+      font-family: 'DM Mono', monospace;
+      letter-spacing: 0.03em;
+    }
+
+    /* Option label */
+    .option-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.25em;
+      color: var(--grey);
+      text-transform: lowercase;
+      margin-bottom: 0.75rem;
+    }
+
+    /* Size selector */
+    .sizes { display: flex; gap: 0.75rem; margin-bottom: 2.5rem; }
+    .size-opt {
+      width: 40px;
+      height: 40px;
+      border: 1px solid var(--grey);
+      background: none;
+      color: var(--white);
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .size-opt:hover, .size-opt.active { border-color: var(--blush); color: var(--blush); }
+
+    /* Placement selector (in product area) */
+    .placements { display: flex; gap: 0.75rem; margin-bottom: 2.5rem; }
+    .placement-opt {
+      border: 1px solid var(--grey);
+      background: none;
+      color: var(--white);
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.12em;
+      cursor: pointer;
+      transition: all 0.2s;
+      padding: 0.6rem 1rem;
+      text-transform: lowercase;
+      line-height: 1.6;
+      text-align: center;
+    }
+    .placement-opt:hover, .placement-opt.active { border-color: var(--blush); color: var(--blush); }
+
+    .price-row { display: flex; align-items: baseline; gap: 2rem; margin-bottom: 2.5rem; }
+    .price { font-size: 1.4rem; font-weight: 300; letter-spacing: 0.05em; }
+    .price-note {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      color: var(--grey);
+      text-transform: lowercase;
+    }
+
+    /* Buy button */
+    .buy-btn {
+      display: inline-block;
+      background: none;
+      border: 1px solid var(--white);
+      color: var(--white);
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.3em;
+      text-transform: lowercase;
+      padding: 1.1rem 2.8rem;
+      cursor: pointer;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+    .buy-btn::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--white);
+      transform: translateX(-100%);
+      transition: transform 0.35s ease;
+      z-index: -1;
+    }
+    .buy-btn:hover { color: var(--black); }
+    .buy-btn:hover::before { transform: translateX(0); }
+
+    /* Footer */
+    footer {
+      padding: 2rem 3rem;
+      border-top: 1px solid #1e1816;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      opacity: 0;
+      animation: fadeUp 1.2s ease forwards 0.8s;
+    }
+    footer span {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      color: var(--grey);
+      text-transform: lowercase;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Mobile */
+    @media (max-width: 768px) {
+      header { padding: 2rem 1.5rem; }
+      main { grid-template-columns: 1fr; padding: 3rem 1.5rem 5rem; gap: 3rem; }
+      .product-area { padding-left: 0; padding-top: 0; }
+      .product-name { font-size: 2.5rem; }
+      footer { padding: 1.5rem; flex-direction: column; gap: 0.5rem; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+<div class="site">
+
+  <header>
+    <a href="/" class="wordmark">ebbadsgn</a>
+    <button class="cart-btn snipcart-checkout">cart <span class="snipcart-items-count"></span></button>
+  </header>
+
+  <main>
+
+    <!-- Left: visual -->
+    <div class="product-visual">
+      <div class="hoodie-wrap">
+        <img id="img-small" class="hoodie-img visible" src="ebba-small-chest.jpg" alt="small chest placement" />
+        <img id="img-large" class="hoodie-img" src="ebba-large-front.jpg" alt="large front placement" />
+      </div>
+      <div class="logo-lockup">
+        <img class="flower" src="ebba-flower.jpg" alt="ebbadsgn flower" />
+        <span class="logo-wordmark">ebbadsgn.</span>
+      </div>
+    </div>
+
+    <!-- Right: product info -->
+    <div class="product-area">
+
+      <p class="product-tag">no. 001 — hoodie</p>
+      <h1 class="product-name">The<br>Original</h1>
+      <p class="product-sub">by ebba</p>
+
+      <p class="product-desc">
+        oversized hoodie<br>
+        100% organic cotton<br>
+        printed in sweden<br>
+        limited run
+      </p>
+
+      <p class="option-label">size</p>
+      <div class="sizes">
+        <button class="size-opt active" onclick="selectSize(this, 'S')">s</button>
+        <button class="size-opt" onclick="selectSize(this, 'M')">m</button>
+        <button class="size-opt" onclick="selectSize(this, 'L')">l</button>
+        <button class="size-opt" onclick="selectSize(this, 'XL')">xl</button>
+      </div>
+
+      <p class="option-label">placement</p>
+      <div class="placements">
+        <button class="placement-opt active" onclick="selectPlacement(this, 'small chest')">
+          small<br>chest
+        </button>
+        <button class="placement-opt" onclick="selectPlacement(this, 'large front')">
+          large<br>front
+        </button>
+      </div>
+
+      <div class="price-row">
+        <span class="price">1 799 kr</span>
+        <span class="price-note">incl. vat · free shipping</span>
+      </div>
+
+      <button
+        class="buy-btn snipcart-add-item"
+        data-item-id="hoodie-original-001"
+        data-item-name="The Original Hoodie"
+        data-item-price="1799"
+        data-item-url="/"
+        data-item-description="Oversized hoodie, 100% organic cotton. By Ebba."
+        data-item-custom1-name="Size"
+        data-item-custom1-options="S|M|L|XL"
+        data-item-custom1-value="S"
+        data-item-custom2-name="Placement"
+        data-item-custom2-options="Small chest|Large front"
+        data-item-custom2-value="Small chest"
+      >
+        add to cart
+      </button>
+
+    </div>
+  </main>
+
+  <footer>
+    <span>© ebbadsgn 2025</span>
+    <span>stockholm, sweden</span>
+    <span>questions? hej@ebbadsgn.se</span>
+  </footer>
+
+</div>
+
+<div hidden id="snipcart" data-api-key="YOUR_SNIPCART_PUBLIC_API_KEY"></div>
+<script async src="https://cdn.snipcart.com/themes/v3.7.2/default/snipcart.js"></script>
+
+<script>
+  const btn = document.querySelector('.snipcart-add-item');
+
+  function selectSize(el, size) {
+    document.querySelectorAll('.size-opt').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+    btn.setAttribute('data-item-custom1-value', size);
+  }
+
+  function selectPlacement(el, placement) {
+    document.querySelectorAll('.placement-opt').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+    btn.setAttribute('data-item-custom2-value', placement);
+
+    // Swap hoodie image
+    const imgSmall = document.getElementById('img-small');
+    const imgLarge = document.getElementById('img-large');
+    if (placement === 'small chest') {
+      imgSmall.classList.add('visible');
+      imgLarge.classList.remove('visible');
+    } else {
+      imgLarge.classList.add('visible');
+      imgSmall.classList.remove('visible');
+    }
+  }
+</script>
+</body>
+</html>
