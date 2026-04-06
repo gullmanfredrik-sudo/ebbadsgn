@@ -1,0 +1,30 @@
+---
+description: Deploy till VPS, Git-flöde och syskonprojekt Taxiingo på samma server
+alwaysApply: true
+---
+
+# Deploy (ebbadsgn.se)
+
+## Git och GitHub
+
+- **Git-rot:** denna mapp (`ebbadsgn.se-website`), där `.git` ligger.
+- **Remote:** `origin` → **https://github.com/gullmanfredrik-sudo/ebbadsgn**
+- **Standardgren:** `main`. Produktion uppdateras via push till `main`.
+
+## Produktionsserver (samma VPS som Taxiingo)
+
+- **IP:** `185.189.50.223`
+- **Webbfiler på servern:** `/var/www/ebbadsgn` (statisk sajt: `index.html`, bilder).
+- **Nginx:** lyssnar på **port 8080** tills egen domän/SSL sätts; mall finns i repot: [`nginx/ebbadsgn-8080.conf`](nginx/ebbadsgn-8080.conf).
+- **Automatisk deploy:** [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) — vid push till `main` SSH:as till VPS och körs `git fetch` + `git reset --hard origin/main` i `/var/www/ebbadsgn`.
+- **GitHub Actions-secret:** `SSH_PASSWORD` (root till VPS). Lägg aldrig lösenord i kod eller commits.
+
+## Syskonrepo (Taxiingo) — rör inte av misstag
+
+- **Lokal projektmapp (Windows):** `...\Claude\Projects\Taxiingo.se website\taxiingo-project` (full sökväg under användarens OneDrive/Claude/Projects).
+- **På VPS:** `/var/www/taxiingo` — Node-backend, PM2, Nginx 80/443 för **taxiingo.se**.
+- **Viktigt:** Ändringar i **ebbadsgn-repot** deployar **bara** `/var/www/ebbadsgn`. Taxiingo har **eget** GitHub-repo och **egen** workflow. Blanda inte ihop kataloger eller nginx-block.
+
+## Manuell uppdatering (utan CI)
+
+På servern: `cd /var/www/ebbadsgn && git pull` (eller `git fetch` + `git reset --hard origin/main`).
