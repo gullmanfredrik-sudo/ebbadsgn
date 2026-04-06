@@ -1,0 +1,24 @@
+name: Deploy to VPS
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy static site to VPS
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: 185.189.50.223
+          username: root
+          password: ${{ secrets.SSH_PASSWORD }}
+          # Första gången på servern: klona repot till /var/www/ebbadsgn och sätt nginx
+          # (se nginx/ebbadsgn-8080.conf). Committa aldrig produktionsändringar bara på VPS.
+          script: |
+            cd /var/www/ebbadsgn &&
+            git fetch origin main &&
+            git reset --hard origin/main &&
+            echo "ebbadsgn deployment complete!"
